@@ -53,23 +53,35 @@ function GameController(
   };
 
   const checkWinner = () => {
-    //vertical
+    // //vertical
     for(i = 0; i< 3; i++ ) {
-       if (grid[0][i]  && grid[1][i] && grid[2][i] != "" 
-        ) return true ;
+       if (grid[0][i] === "X"   && grid[1][i] === "X"  && grid[2][i] === "X" 
+        ) {return true };
+         if (grid[0][i] === "O"  && grid[1][i] === "O"  && grid[2][i] === "O" 
+        ) {return true };
     };
+
     // horizontal
     for(i = 0; i< 3; i++ ) {
-       if (grid[i][0]  && grid[i][1]&& grid[i][2] != "" 
-        ) return true ;
+       if (grid[i][0] === "X"  && grid[i][1] === "X" && grid[i][2] === "X" 
+        ) {return true };
+        if (grid[i][0] === "O" && grid[i][1] === "O"  && grid[i][2] === "O" 
+        ) {return true };
     };
 
-    //diagonal
-    if (grid[0][0]  && grid[1][1] && grid[2][2] != "" 
-        ) return true ;
+    // diagonal
+    if (grid[0][0] === "X" && grid[1][1] === "X" && grid[2][2] === "X" 
+        ) {return true}
+    else if(grid[0][0] === "O" && grid[1][1] === "O" && grid[2][2] === "O"
+        ) {return true};
 
-    else if (grid[0][2]  && grid[1][1] && grid[2][0] != "" 
-        ) return true ;
+     if (grid[0][2] === "X" && grid[1][1] === "X"  && grid[2][0] === "X" 
+        ) {return true}
+      else if(grid[0][2] === "O"  && grid[1][1] === "O" && grid[2][0] === "0" 
+        ) {return true};
+
+    if(grid.every((row) => row.every((cell) => cell !=="")))
+      return true;
 
     return false;
   }
@@ -84,7 +96,7 @@ function GameController(
         return;
       }
 
-    if(checkWinner()== true) {
+    if(checkWinner() === true) {
       console.log("it works!")
     };
     switchPlayerTurn();
@@ -103,11 +115,14 @@ function GameController(
 
 const game = GameController();
 // horizontal
-// game.playRound(1,0)
-// game.playRound(0,0)
-// game.playRound(2,0)
-// game.playRound(0,1)
-// game.playRound(2,2)
-// game.playRound(0,2)
+game.playRound(0, 0) // X
+game.playRound(0, 1) // O
+game.playRound(0, 2) // X
 
+game.playRound(1, 1) // O
+game.playRound(1, 0) // X
+game.playRound(1, 2) // O
 
+game.playRound(2, 1) // X
+game.playRound(2, 0) // O
+game.playRound(2, 2) // X
