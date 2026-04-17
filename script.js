@@ -28,6 +28,8 @@ function GameController(
   
   const board = Gameboard();
   const grid = board.getBoard(); 
+  let scoreOne = 0;
+  let scoreTwo = 0;
 
   const players = [
     {
@@ -84,6 +86,28 @@ function GameController(
       return true;
 
     return false;
+    scoreBoard();
+  }
+
+  const scoreBoard = () => {
+    if(players[0] && checkWinner() === true) {
+      scoreOne++;
+      console.log(`${getActivePlayer().name} you Win.`)
+      return true;
+    } else if (players[1] && checkWinner() === true ) {
+      scoreTwo++;
+        console.log(`${getActivePlayer().name} you Win.`)
+        return true;
+    }
+    return {scoreOne, scoreTwo};
+    
+  }
+
+  const resetBoard = () => {
+    if (checkWinner() === true) {
+      console.log("reset")
+      
+    }
   }
 
 
@@ -99,6 +123,11 @@ function GameController(
     if(checkWinner() === true) {
       console.log("it works!")
     };
+     
+     if(scoreBoard() === true) {
+      console.log(" works!")
+    };
+    resetBoard();
     switchPlayerTurn();
     printNewRound();
   };
@@ -115,14 +144,16 @@ function GameController(
 
 const game = GameController();
 // horizontal
-game.playRound(0, 0) // X
-game.playRound(0, 1) // O
-game.playRound(0, 2) // X
+game.playRound(0, 0) 
+game.playRound(1, 0) 
+game.playRound(0, 2) 
+game.playRound(1, 1) 
+game.playRound(0, 1) 
 
-game.playRound(1, 1) // O
-game.playRound(1, 0) // X
-game.playRound(1, 2) // O
+// game.playRound(1, 1) // O
+// game.playRound(1, 0) // X
+// game.playRound(1, 2) // O
 
-game.playRound(2, 1) // X
-game.playRound(2, 0) // O
-game.playRound(2, 2) // X
+// game.playRound(2, 1) // X
+// game.playRound(2, 0) // O
+// game.playRound(2, 2) // X
