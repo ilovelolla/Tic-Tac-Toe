@@ -1,7 +1,7 @@
 function Gameboard() {
   const rows = 3;
   const columns = 3;
-  const board = [];
+  let board = [];
 
 
   for (let i = 0; i < rows; i++) {
@@ -27,9 +27,10 @@ function GameController(
 ) {
   
   const board = Gameboard();
-  const grid = board.getBoard(); 
-  let scoreOne = 0;
-  let scoreTwo = 0;
+  let grid = board.getBoard(); 
+  let playerOnescore = 0;
+  let playerTwoscore = 0;
+  let gameOver = false;
 
   const players = [
     {
@@ -48,6 +49,7 @@ function GameController(
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
   const getActivePlayer = () => activePlayer;
+  
 
   const printNewRound = () => {
     board.printBoard();
@@ -83,33 +85,26 @@ function GameController(
         ) {return true};
 
     if(grid.every((row) => row.every((cell) => cell !=="")))
-      return true;
+      return gameOver = true;
 
     return false;
-    scoreBoard();
   }
 
   const scoreBoard = () => {
     if(players[0] && checkWinner() === true) {
-      scoreOne++;
+      playerOnescore ++;
       console.log(`${getActivePlayer().name} you Win.`)
       return true;
     } else if (players[1] && checkWinner() === true ) {
-      scoreTwo++;
+      playerTwoscore;
         console.log(`${getActivePlayer().name} you Win.`)
-        return true;
-    }
-    return {scoreOne, scoreTwo};
+      return true;
+    } 
     
-  }
+  };
 
-  const resetBoard = () => {
-    if (checkWinner() === true) {
-      console.log("reset")
-      
-    }
-  }
-
+  const getplayerOnescore = () => playerOnescore;
+  const getplayeTwoscore = () => playerTwoscore;
 
   const playRound = (row, column) => {
      
@@ -125,9 +120,9 @@ function GameController(
     };
      
      if(scoreBoard() === true) {
-      console.log(" works!")
+      console.log(" score works!")
     };
-    resetBoard();
+    // resetBoard();
     switchPlayerTurn();
     printNewRound();
   };
@@ -136,24 +131,53 @@ function GameController(
   printNewRound();
 
   return {
-    playRound,
-    getActivePlayer,
-    checkWinner
-  };
+    playRound, switchPlayerTurn,getActivePlayer, checkWinner, getplayerOnescore, getplayerOnescore, getBoard: board.getBoard, grid};
 }
 
-const game = GameController();
-// horizontal
-game.playRound(0, 0) 
-game.playRound(1, 0) 
-game.playRound(0, 2) 
-game.playRound(1, 1) 
-game.playRound(0, 1) 
+function ScreenController() {
+  const game = GameController();
+  const playerTurnDiv = document.querySelector('.turn');
+  const boardDiv = document.querySelector('.board');
 
-// game.playRound(1, 1) // O
-// game.playRound(1, 0) // X
-// game.playRound(1, 2) // O
+  const createGrid = (n) => {
+  for(let i=0; i<n; i++) {
+    for (let j=0; j<n; j++) {
+      let divChild = document.createElement("div");
+      divChild.classList.add("child");
+      divChild.id = `cell-${i}-${j}`;
+      boardDiv.appendChild(divChild);
+      console.log(boardDiv)
+    } 
+  }};
+  createGrid(3);
 
-// game.playRound(2, 1) // X
-// game.playRound(2, 0) // O
-// game.playRound(2, 2) // X
+  const updateScreen = () => {
+    boardDiv.textContent = " ";
+    const board = game.getBoard;
+    const activePlayer = game.getActivePlayer;
+
+    playerTurnDiv.textContent = `${activePlayer.name}s turn.`;
+
+    children.forEach(child => {
+      child.addEventListener("click", handleClick)
+    })
+  };
+
+  function handleClick(e) {
+    const child = e.target;
+    const index = child.getAttribute('id');
+
+     if (board[index] !== "" || gameOver) {
+    return;
+    
+    checkWinner();
+    switchPlayerTurn();
+  }
+
+  }
+
+  const children = document.getElementsByClassName(".child");
+
+};
+
+ScreenController();
