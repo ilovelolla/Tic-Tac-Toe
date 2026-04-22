@@ -138,18 +138,26 @@ function ScreenController() {
   const game = GameController();
   const playerTurnDiv = document.querySelector('.turn');
   const boardDiv = document.querySelector('.board');
+  var arr = [];
 
   const createGrid = (n) => {
   for(let i=0; i<n; i++) {
+    arr[i] = []
     for (let j=0; j<n; j++) {
       let divChild = document.createElement("div");
       divChild.classList.add("child");
-      divChild.id = `cell-${i}-${j}`;
+
+      divChild.setAttribute("row", i);
+      divChild.setAttribute("column", j);
       boardDiv.appendChild(divChild);
-      console.log(boardDiv)
+      arr[i][j] = divChild;
+      // console.log(arr[0][0].textContent = game.getActivePlayer().token)
+      console.log(divChild[0][0])
     } 
   }};
   createGrid(3);
+
+   const children = document.querySelectorAll(".child");
 
   const updateScreen = () => {
     boardDiv.textContent = " ";
@@ -158,25 +166,21 @@ function ScreenController() {
 
     playerTurnDiv.textContent = `${activePlayer.name}s turn.`;
 
-    children.forEach(child => {
-      child.addEventListener("click", handleClick)
-    })
   };
+
+  children.forEach(childs => {
+     childs.addEventListener("click", handleClick)
+    });
 
   function handleClick(e) {
     const child = e.target;
-    const index = child.getAttribute('id');
-
-     if (board[index] !== "" || gameOver) {
-    return;
-    
-    checkWinner();
-    switchPlayerTurn();
+    console.log("hekolo")
+    game.grid;
+    game.checkWinner();
+    game.switchPlayerTurn();
   }
+  
 
-  }
-
-  const children = document.getElementsByClassName(".child");
 
 };
 
