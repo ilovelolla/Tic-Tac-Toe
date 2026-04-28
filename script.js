@@ -30,7 +30,6 @@ function GameController(
   let grid = board.getBoard(); 
   let playerOnescore = 0;
   let playerTwoscore = 0;
-  let gameOver = false;
 
   const players = [
     {
@@ -112,8 +111,8 @@ function GameController(
        grid[row].splice(column, 1, getActivePlayer().token);
       } else {
         console.log("Already Taken");
-        return;
-      }
+        return
+      };
 
     if(checkWinner() === true) {
       console.log("it works!")
@@ -121,8 +120,7 @@ function GameController(
      
      if(scoreBoard() === true) {
       console.log(" score works!")
-    };
-    // resetBoard();
+    }
     switchPlayerTurn();
     printNewRound();
   };
@@ -131,57 +129,144 @@ function GameController(
   printNewRound();
 
   return {
-    playRound, switchPlayerTurn,getActivePlayer, checkWinner, getplayerOnescore, getplayerOnescore, getBoard: board.getBoard, grid};
+    playRound, switchPlayerTurn,getActivePlayer, checkWinner, players ,
+    getplayerOnescore, getplayerOnescore, getBoard: board.getBoard, grid};
 }
+
+
 
 function ScreenController() {
   const game = GameController();
-  const playerTurnDiv = document.querySelector('.turn');
-  const boardDiv = document.querySelector('.board');
+  const playerTurnDiv = document.querySelector(".turn");
+  const boardDiv = document.querySelector(".board");
+  const cellDiv = document.querySelector(".child")
   var arr = [];
 
-  const createGrid = (n) => {
-  for(let i=0; i<n; i++) {
-    arr[i] = []
-    for (let j=0; j<n; j++) {
-      let divChild = document.createElement("div");
-      divChild.classList.add("child");
-
-      divChild.setAttribute("row", i);
-      divChild.setAttribute("column", j);
-      boardDiv.appendChild(divChild);
-      arr[i][j] = divChild;
-      // console.log(arr[0][0].textContent = game.getActivePlayer().token)
-      console.log(divChild[0][0])
-    } 
-  }};
-  createGrid(3);
-
-   const children = document.querySelectorAll(".child");
-
   const updateScreen = () => {
-    boardDiv.textContent = " ";
-    const board = game.getBoard;
-    const activePlayer = game.getActivePlayer;
+    // clear the board
+    boardDiv.textContent = "";
 
-    playerTurnDiv.textContent = `${activePlayer.name}s turn.`;
+    // get the newest version of the board and player turn
+    const board = game.getBoard();
+    const activePlayer = game.getActivePlayer();
 
+    // Display player's turn
+    playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+
+    // Render board squares
+    board.forEach((row,column) => {
+      row.forEach((cell, index) => {
+        const cellButton = document.createElement("div");
+        cellButton.classList.add("child");
+        cellButton.dataset.column = column;
+        cellButton.dataset.row = index  ;
+        cellButton.textContent = cell;
+        console.log(column)
+        boardDiv.appendChild(cellButton)
+
+      });
+    });
   };
 
-  children.forEach(childs => {
-     childs.addEventListener("click", handleClick)
-    });
 
-  function handleClick(e) {
-    const child = e.target;
-    console.log("hekolo")
-    game.grid;
-    game.checkWinner();
-    game.switchPlayerTurn();
-  }
+
+  // Add event listener for the board
+  function clickHandlerBoard(e) {
+    const selectedColumn = e.target.dataset.column;
+    const selectedRow = e.target.dataset.row;
+    console.log(`click ${selectedRow}, ${selectedColumn}`);
+
   
+    if(!selectedRow && !selectedColumn) return;
+    
+    game.playRound( selectedColumn, selectedRow);
+    updateScreen();
+  }
+
+  
+  boardDiv.addEventListener("click", clickHandlerBoard);
+ 
+
+  // Initial render
+  updateScreen();
 
 
-};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // We don't need to return anything from this module because everything is encapsulated inside this screen controller.
+}
+// function ScreenController() {
+//   const game = GameController();
+//   const playerTurnDiv = document.querySelector('.turn');
+//   const boardDiv = document.querySelector('.board');
+//   var arr = [];
+
+//   // const createGrid = (n) => {
+//   // for(let i=0; i<n; i++) {
+//   //   arr[i] = []
+//   //   for (let j=0; j<n; j++) {
+//   //     let divChild = document.createElement("div");
+//   //     divChild.classList.add("child");
+//   //     divChild.setAttribute("row", [i]);
+//   //     divChild.setAttribute("column", [j]);
+//   //     boardDiv.appendChild(divChild);
+//   //     arr[i][j] = divChild;    
+//   //   } 
+//   // }};
+//   // createGrid(3);
+
+//    const children = document.querySelectorAll(".child");
+
+//   const updateScreen = () => {
+//     boardDiv.textContent = " ";
+//     const board = game.getBoard;
+//     const activePlayer = game.getActivePlayer;
+
+//     playerTurnDiv.textContent = `${activePlayer.name}s turn.`;
+
+//         board.forEach(row => {
+//       row.forEach((cell, index) => {
+//         // Anything clickable should be a button!!
+//         const cellButton = document.createElement("div");
+//         cellButton.classList.add("child");
+//         // Create a data attribute to identify the column
+//         // This makes it easier to pass into our `playRound` function 
+//         cellButton.dataset.column = index
+//         // cellButton.textContent = cell.getValue();
+//         boardDiv.appendChild(cellButton);
+//       })
+//     });
+
+//   };
+
+//   children.forEach(childs => {
+//      childs.addEventListener("click", handleClick)
+//     });
+
+//   function handleClick(e) {
+//     const child = e.target;
+//     console.log("hekolo")
+//     game.grid;
+//     game.checkWinner();
+//     game.switchPlayerTurn();
+//   }
+  
+// };
 
 ScreenController();
