@@ -18,18 +18,19 @@ function Gameboard() {
     console.log(boardWithCellValues);
   };
 
-  return { getBoard, printBoard };
+  return { getBoard, printBoard, board };
 };
 
 function GameController(
   playerOneName = "Player One",
-  playerTwoName = "Player Two"
-) {
+  playerTwoName = "Player Two") 
+  {
   
   const board = Gameboard();
   let grid = board.getBoard(); 
   let playerOnescore = 0;
   let playerTwoscore = 0;
+  let isGameOver = false
 
   const players = [
     {
@@ -79,12 +80,12 @@ function GameController(
         ) {return true};
 
      if (grid[0][2] === "X" && grid[1][1] === "X"  && grid[2][0] === "X" 
-        ) {return true}
-      else if(grid[0][2] === "O"  && grid[1][1] === "O" && grid[2][0] === "0" 
+        ) {return true};
+     if(grid[0][2] === "O"  && grid[1][1] === "O" && grid[2][0] === "0" 
         ) {return true};
 
     if(grid.every((row) => row.every((cell) => cell !=="")))
-      return gameOver = true;
+      return isGameOver = true;
 
     return false;
   }
@@ -102,6 +103,15 @@ function GameController(
     
   };
 
+  // const endGame = () => {
+  //   if (playerOnescore > playerTwoscore) {
+  //     isGameOver = true;
+  //     grid.splice(0);
+  //     console.log(grid)
+  //     switchPlayerTurn(GameController);
+  //   }
+  // };
+
   const getplayerOnescore = () => playerOnescore;
   const getplayeTwoscore = () => playerTwoscore;
 
@@ -114,13 +124,11 @@ function GameController(
         return
       };
 
-    if(checkWinner() === true) {
-      console.log("it works!")
-    };
-     
-     if(scoreBoard() === true) {
-      console.log(" score works!")
-    }
+   if(checkWinner === true) {
+    isGameOver = true;
+   }
+     scoreBoard();
+    //  endGame();
     switchPlayerTurn();
     printNewRound();
   };
@@ -129,7 +137,7 @@ function GameController(
   printNewRound();
 
   return {
-    playRound, switchPlayerTurn,getActivePlayer, checkWinner, players ,
+    playRound, switchPlayerTurn,getActivePlayer, checkWinner, players , scoreBoard,
     getplayerOnescore, getplayerOnescore, getBoard: board.getBoard, grid};
 }
 
@@ -139,7 +147,8 @@ function ScreenController() {
   const game = GameController();
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
-  const cellDiv = document.querySelector(".child")
+  const cellDiv = document.querySelector(".child");
+  const board = game.getBoard();
   var arr = [];
 
   const updateScreen = () => {
@@ -147,11 +156,16 @@ function ScreenController() {
     boardDiv.textContent = "";
 
     // get the newest version of the board and player turn
-    const board = game.getBoard();
+    
     const activePlayer = game.getActivePlayer();
 
     // Display player's turn
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+
+
+    // if (game.scoreBoard === true) {
+    //   playerTurnDiv.textContent = `${activePlayer.name}'s you Win...`
+    // }
 
     // Render board squares
     board.forEach((row,column) => {
@@ -161,12 +175,31 @@ function ScreenController() {
         cellButton.dataset.column = column;
         cellButton.dataset.row = index  ;
         cellButton.textContent = cell;
-        console.log(column)
-        boardDiv.appendChild(cellButton)
+        boardDiv.appendChild(cellButton);
 
       });
     });
+    
   };
+
+
+   const clearGame = () => {
+    const cells = document.querySelectorAll(".child");
+    cells.forEach(cell => {
+      cell.innerHTML = "";
+    });
+    board.forEach(row => row.fill(""));
+   };
+
+   function handleReset(e){
+    document.querySelector('#reset').addEventListener('click', function(){
+     clearGame();
+     console.log(board);
+     
+    });
+}
+
+handleReset();
 
 
 
@@ -190,83 +223,6 @@ function ScreenController() {
   // Initial render
   updateScreen();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // We don't need to return anything from this module because everything is encapsulated inside this screen controller.
 }
-// function ScreenController() {
-//   const game = GameController();
-//   const playerTurnDiv = document.querySelector('.turn');
-//   const boardDiv = document.querySelector('.board');
-//   var arr = [];
-
-//   // const createGrid = (n) => {
-//   // for(let i=0; i<n; i++) {
-//   //   arr[i] = []
-//   //   for (let j=0; j<n; j++) {
-//   //     let divChild = document.createElement("div");
-//   //     divChild.classList.add("child");
-//   //     divChild.setAttribute("row", [i]);
-//   //     divChild.setAttribute("column", [j]);
-//   //     boardDiv.appendChild(divChild);
-//   //     arr[i][j] = divChild;    
-//   //   } 
-//   // }};
-//   // createGrid(3);
-
-//    const children = document.querySelectorAll(".child");
-
-//   const updateScreen = () => {
-//     boardDiv.textContent = " ";
-//     const board = game.getBoard;
-//     const activePlayer = game.getActivePlayer;
-
-//     playerTurnDiv.textContent = `${activePlayer.name}s turn.`;
-
-//         board.forEach(row => {
-//       row.forEach((cell, index) => {
-//         // Anything clickable should be a button!!
-//         const cellButton = document.createElement("div");
-//         cellButton.classList.add("child");
-//         // Create a data attribute to identify the column
-//         // This makes it easier to pass into our `playRound` function 
-//         cellButton.dataset.column = index
-//         // cellButton.textContent = cell.getValue();
-//         boardDiv.appendChild(cellButton);
-//       })
-//     });
-
-//   };
-
-//   children.forEach(childs => {
-//      childs.addEventListener("click", handleClick)
-//     });
-
-//   function handleClick(e) {
-//     const child = e.target;
-//     console.log("hekolo")
-//     game.grid;
-//     game.checkWinner();
-//     game.switchPlayerTurn();
-//   }
-  
-// };
 
 ScreenController();
