@@ -107,7 +107,7 @@ function GameController(
     if (moveCount === maxRound) {
       endGame();
     };
-    return moveCount;
+    return {moveCount, playerOnescore, playerTwoscore};
   };
 
   const endGame = () => {
@@ -119,7 +119,7 @@ function GameController(
   };
 
   const getplayerOnescore = () => playerOnescore;
-  const getplayeTwoscore = () => playerTwoscore;
+  const getplayerTwoscore = () => playerTwoscore;
 
   const playRound = (row, column) => {
      
@@ -140,7 +140,7 @@ function GameController(
 
   return {
     playRound, switchPlayerTurn,getActivePlayer, checkWinner, players , scoreBoard, checkTie,
-    getplayerOnescore, getplayerOnescore, getBoard: board.getBoard, grid, maxRound, moveCount};
+  getplayerOnescore, getplayerTwoscore, getBoard: board.getBoard, grid, maxRound, moveCount};
 };
 
 
@@ -151,6 +151,9 @@ function ScreenController() {
   const boardDiv = document.querySelector(".board");
   const cellDiv = document.querySelector(".child");
   const board = game.getBoard();
+  const playerOnescore = document.querySelector("#playerOnescore");
+  const playerTwoscore = document.querySelector("#playerTwoscore");
+
   var arr = [];
 
   const updateScreen = () => {
@@ -163,6 +166,9 @@ function ScreenController() {
 
     // Display player's turn
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+
+    playerOnescore.innerHTML = `Player One Score:${game.getplayerOnescore()}`;
+    playerTwoscore.innerHTML = `Player Two Score:${game.getplayerTwoscore()}`;
 
     // Render board squares
     board.forEach((row,column) => {
@@ -200,26 +206,38 @@ function ScreenController() {
         boardDiv.removeEventListener("click", clickHandlerBoard);
       }};
 
-    
-   
-
-  // Reset the game
+  
+  // New round game
    function handleNewRound(e){
     document.querySelector('#newRound').addEventListener('click', function(){
      const cells = document.querySelectorAll(".child");
     cells.forEach(cell => {
       cell.innerHTML = "";});
      board.forEach(row => row.fill(""));
+      boardDiv.addEventListener("click", clickHandlerBoard);
      })};
 
+  //Reset Game
+     function resetGame(e) {
+      document.querySelector('#reset').addEventListener('click', function(){
+      const cells = document.querySelectorAll(".child");
+      cells.forEach(cell => {
+      cell.innerHTML = "";});
+      board.forEach(row => row.fill(""));
+      })
+     };
   
+     const resetboardGame = (e) => {
+      
+     }
+
+
  
 
   // Initial render
   updateScreen();
   handleNewRound();
- 
-  
+  resetGame();
 
 }
 
