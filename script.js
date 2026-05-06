@@ -30,7 +30,8 @@ function GameController(
   let grid = board.getBoard(); 
   let playerOnescore = 0;
   let playerTwoscore = 0;
-  let isGameOver = false
+  let moveCount = 0;
+  let maxRound = 3;
 
   const players = [
     {
@@ -60,57 +61,62 @@ function GameController(
     // //vertical
     for(i = 0; i< 3; i++ ) {
        if (grid[0][i] === "X"   && grid[1][i] === "X"  && grid[2][i] === "X" 
-        ) {return true };
+        ) {return "X" };
          if (grid[0][i] === "O"  && grid[1][i] === "O"  && grid[2][i] === "O" 
-        ) {return true };
+        ) {return "O" };
     };
 
     // horizontal
     for(i = 0; i< 3; i++ ) {
        if (grid[i][0] === "X"  && grid[i][1] === "X" && grid[i][2] === "X" 
-        ) {return true };
+        ) {return "X" };
         if (grid[i][0] === "O" && grid[i][1] === "O"  && grid[i][2] === "O" 
-        ) {return true };
+        ) {return "O" };
     };
 
     // diagonal
     if (grid[0][0] === "X" && grid[1][1] === "X" && grid[2][2] === "X" 
-        ) {return true}
+        ) {return "X"}
     else if(grid[0][0] === "O" && grid[1][1] === "O" && grid[2][2] === "O"
-        ) {return true};
+        ) {return "O"};
 
      if (grid[0][2] === "X" && grid[1][1] === "X"  && grid[2][0] === "X" 
-        ) {return true};
-     if(grid[0][2] === "O"  && grid[1][1] === "O" && grid[2][0] === "0" 
-        ) {return true};
+        ) {return "X"};
+     if(grid[0][2] === "O"  && grid[1][1] === "O" && grid[2][0] === "O" 
+        ) {return "O"};
 
-    if(grid.every((row) => row.every((cell) => cell !=="")))
-      return isGameOver = true;
+    // if(grid.every((row) => row.every((cell) => cell !=="")));
 
-    return false;
-  }
+    };
+
+    const checkTie = () => {
+      if(grid.every((row) => row.every((cell) => cell !=="")));
+      return true;
+    }
 
   const scoreBoard = () => {
-    if(players[0] && checkWinner() === true) {
+    if(players[0] && checkWinner() === "X") {
       playerOnescore ++;
-      console.log(`${getActivePlayer().name} you Win.`)
-      return true;
-    } else if (players[1] && checkWinner() === true ) {
-      playerTwoscore;
-        console.log(`${getActivePlayer().name} you Win.`)
-      return true;
-    } 
-    
+       moveCount++;
+      console.log(`${getActivePlayer().name} you Win. Score: ${playerOnescore} Move Count: ${moveCount}`)
+    } else if (players[1] && checkWinner() === "O")  {
+      playerTwoscore++;
+       moveCount++;
+        console.log(`${getActivePlayer().name} you Win. Score: ${playerTwoscore} Move Count: ${moveCount}`)
+    } ;
+    if (moveCount === maxRound) {
+      endGame();
+    };
+    return moveCount;
   };
 
-  // const endGame = () => {
-  //   if (playerOnescore > playerTwoscore) {
-  //     isGameOver = true;
-  //     grid.splice(0);
-  //     console.log(grid)
-  //     switchPlayerTurn(GameController);
-  //   }
-  // };
+  const endGame = () => {
+    if (playerOnescore > playerTwoscore ) {
+      console.log(`You win. You just beat ${playerTwoName}`)
+    } else if ( playerTwoscore > playerOnescore) {
+      console.log(`You win. You just beat ${playerOneName}`)
+    }
+  };
 
   const getplayerOnescore = () => playerOnescore;
   const getplayeTwoscore = () => playerTwoscore;
@@ -120,15 +126,11 @@ function GameController(
       if(grid[row][column] === "") {
        grid[row].splice(column, 1, getActivePlayer().token);
       } else {
-        console.log("Already Taken");
+        alert("Already Taken")
         return
-      };
-
-   if(checkWinner === true) {
-    isGameOver = true;
-   }
-     scoreBoard();
-    //  endGame();
+      }; 
+    checkWinner();
+    scoreBoard();
     switchPlayerTurn();
     printNewRound();
   };
@@ -137,9 +139,9 @@ function GameController(
   printNewRound();
 
   return {
-    playRound, switchPlayerTurn,getActivePlayer, checkWinner, players , scoreBoard,
-    getplayerOnescore, getplayerOnescore, getBoard: board.getBoard, grid};
-}
+    playRound, switchPlayerTurn,getActivePlayer, checkWinner, players , scoreBoard, checkTie,
+    getplayerOnescore, getplayerOnescore, getBoard: board.getBoard, grid, maxRound, moveCount};
+};
 
 
 
@@ -162,11 +164,6 @@ function ScreenController() {
     // Display player's turn
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
-
-    // if (game.scoreBoard === true) {
-    //   playerTurnDiv.textContent = `${activePlayer.name}'s you Win...`
-    // }
-
     // Render board squares
     board.forEach((row,column) => {
       row.forEach((cell, index) => {
@@ -176,52 +173,53 @@ function ScreenController() {
         cellButton.dataset.row = index  ;
         cellButton.textContent = cell;
         boardDiv.appendChild(cellButton);
+      });});
 
-      });
-    });
     
   };
 
 
-   const clearGame = () => {
-    const cells = document.querySelectorAll(".child");
-    cells.forEach(cell => {
-      cell.innerHTML = "";
-    });
-    board.forEach(row => row.fill(""));
-   };
-
-   function handleReset(e){
-    document.querySelector('#reset').addEventListener('click', function(){
-     clearGame();
-     console.log(board);
-     
-    });
-}
-
-handleReset();
-
-
-
   // Add event listener for the board
-  function clickHandlerBoard(e) {
+    function clickHandlerBoard(e) {
     const selectedColumn = e.target.dataset.column;
     const selectedRow = e.target.dataset.row;
     console.log(`click ${selectedRow}, ${selectedColumn}`);
-
-  
+     
     if(!selectedRow && !selectedColumn) return;
     
     game.playRound( selectedColumn, selectedRow);
     updateScreen();
+    disableGrid()
+  
   }
+    boardDiv.addEventListener("click", clickHandlerBoard);
+
+    //Stop Grid Execute
+    const disableGrid = (e) => {
+      if (game.checkWinner() === "X" || game.checkWinner() === "O"){
+        boardDiv.removeEventListener("click", clickHandlerBoard);
+      }};
+
+    
+   
+
+  // Reset the game
+   function handleNewRound(e){
+    document.querySelector('#newRound').addEventListener('click', function(){
+     const cells = document.querySelectorAll(".child");
+    cells.forEach(cell => {
+      cell.innerHTML = "";});
+     board.forEach(row => row.fill(""));
+     })};
 
   
-  boardDiv.addEventListener("click", clickHandlerBoard);
  
 
   // Initial render
   updateScreen();
+  handleNewRound();
+ 
+  
 
 }
 
