@@ -107,19 +107,31 @@ function GameController(
     if (moveCount === maxRound) {
       endGame();
     };
-    return {moveCount, playerOnescore, playerTwoscore};
+    return {moveCount};
   };
 
   const endGame = () => {
     if (playerOnescore > playerTwoscore ) {
-      console.log(`You win. You just beat ${playerTwoName}`)
+      console.log(`You win. You just beat ${playerTwoName}`); 
+      return true;
+
     } else if ( playerTwoscore > playerOnescore) {
-      console.log(`You win. You just beat ${playerOneName}`)
+      console.log(`You win. You just beat ${playerOneName}`);
+      return true;
     }
+  };
+
+  const resetValues = () => {
+      playerOnescore = 0;
+      playerTwoscore = 0;
+      moveCount = 0;
+
   };
 
   const getplayerOnescore = () => playerOnescore;
   const getplayerTwoscore = () => playerTwoscore;
+  const getMovecount = () => moveCount;
+  const getMaxround = () => maxRound;
 
   const playRound = (row, column) => {
      
@@ -139,20 +151,26 @@ function GameController(
   printNewRound();
 
   return {
-    playRound, switchPlayerTurn,getActivePlayer, checkWinner, players , scoreBoard, checkTie,
-  getplayerOnescore, getplayerTwoscore, getBoard: board.getBoard, grid, maxRound, moveCount};
-};
+    playRound, switchPlayerTurn,getActivePlayer, checkWinner , scoreBoard, checkTie, maxRound, moveCount,
+    getplayerOnescore,endGame, resetValues, getplayerTwoscore, getBoard: board.getBoard, getMaxround,
+    getMovecount, playerOneName, playerTwoName};
+    };
 
 
 
 function ScreenController() {
   const game = GameController();
   const playerTurnDiv = document.querySelector(".turn");
+  // const declareWinner = document.querySelector(".win");
   const boardDiv = document.querySelector(".board");
   const cellDiv = document.querySelector(".child");
   const board = game.getBoard();
   const playerOnescore = document.querySelector("#playerOnescore");
   const playerTwoscore = document.querySelector("#playerTwoscore");
+  const activePlayer = game.getActivePlayer();
+  const newRound = document.querySelector('#newRound')
+
+ 
 
   var arr = [];
 
@@ -160,15 +178,20 @@ function ScreenController() {
     // clear the board
     boardDiv.textContent = "";
 
-    // get the newest version of the board and player turn
-    
-    const activePlayer = game.getActivePlayer();
-
     // Display player's turn
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
-    playerOnescore.innerHTML = `Player One Score:${game.getplayerOnescore()}`;
-    playerTwoscore.innerHTML = `Player Two Score:${game.getplayerTwoscore()}`;
+    if(game.getMovecount() === game.getMaxround()) {
+      if(game.getplayerOnescore > game.getplayerTwoscore) {
+        playerTurnDiv.textContent = `${game.playerOneName} you win!`
+      };
+       if (game.getplayerTwoscore > game.getplayerOnescore) {
+        playerTurnDiv.textContent = `${game.playerTwoName} you win!`
+      };
+    };
+    
+    playerOnescore.textContent = `Player One Score:${game.getplayerOnescore()}`;
+    playerTwoscore.textContent = `Player Two Score:${game.getplayerTwoscore()}`;
 
     // Render board squares
     board.forEach((row,column) => {
@@ -181,7 +204,6 @@ function ScreenController() {
         boardDiv.appendChild(cellButton);
       });});
 
-    
   };
 
 
@@ -195,7 +217,8 @@ function ScreenController() {
     
     game.playRound( selectedColumn, selectedRow);
     updateScreen();
-    disableGrid()
+    disableGrid();
+    disableNewRound();
   
   }
     boardDiv.addEventListener("click", clickHandlerBoard);
@@ -206,33 +229,42 @@ function ScreenController() {
         boardDiv.removeEventListener("click", clickHandlerBoard);
       }};
 
-  
+    const disableNewRound = (e) => {
+      if (game.getMovecount() === game.getMaxround()) {
+      newRound.removeEventListener('click', handleNewRound);
+      console.log(kakakka)
+      };
+    };
+    
   // New round game
    function handleNewRound(e){
-    document.querySelector('#newRound').addEventListener('click', function(){
-     const cells = document.querySelectorAll(".child");
-    cells.forEach(cell => {
-      cell.innerHTML = "";});
-     board.forEach(row => row.fill(""));
-      boardDiv.addEventListener("click", clickHandlerBoard);
-     })};
+     restartboardGame();
+     };
+
+     newRound.addEventListener('click', handleNewRound)
 
   //Reset Game
      function resetGame(e) {
       document.querySelector('#reset').addEventListener('click', function(){
+     restartboardGame();
+     resettingValues();
+      })
+     };
+  
+     const restartboardGame = (e) => {
       const cells = document.querySelectorAll(".child");
       cells.forEach(cell => {
       cell.innerHTML = "";});
       board.forEach(row => row.fill(""));
-      })
+      boardDiv.addEventListener("click", clickHandlerBoard);
+      playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
      };
-  
-     const resetboardGame = (e) => {
-      
+     
+     const resettingValues = (e) => {
+      game.resetValues();
      }
 
-
- 
+    
 
   // Initial render
   updateScreen();
