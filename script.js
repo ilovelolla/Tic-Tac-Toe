@@ -50,8 +50,6 @@ function GameController(
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
   const getActivePlayer = () => activePlayer;
-  
-
   const printNewRound = () => {
     board.printBoard();
     console.log(`${getActivePlayer().name}'s turn.`);
@@ -85,21 +83,19 @@ function GameController(
      if(grid[0][2] === "O"  && grid[1][1] === "O" && grid[2][0] === "O" 
         ) {return "O"};
 
-    // if(grid.every((row) => row.every((cell) => cell !=="")));
-
     };
 
     const checkTie = () => {
       if(grid.every((row) => row.every((cell) => cell !=="")));
-      return true;
+      return;
     }
 
   const scoreBoard = () => {
-    if(players[0] && checkWinner() === "X") {
+    if(players[0] && checkWinner() === "O") {
       playerOnescore ++;
        moveCount++;
       console.log(`${getActivePlayer().name} you Win. Score: ${playerOnescore} Move Count: ${moveCount}`)
-    } else if (players[1] && checkWinner() === "O")  {
+    } else if (players[1] && checkWinner() === "X")  {
       playerTwoscore++;
        moveCount++;
         console.log(`${getActivePlayer().name} you Win. Score: ${playerTwoscore} Move Count: ${moveCount}`)
@@ -161,7 +157,6 @@ function GameController(
 function ScreenController() {
   const game = GameController();
   const playerTurnDiv = document.querySelector(".turn");
-  // const declareWinner = document.querySelector(".win");
   const boardDiv = document.querySelector(".board");
   const cellDiv = document.querySelector(".child");
   const board = game.getBoard();
@@ -179,19 +174,22 @@ function ScreenController() {
     boardDiv.textContent = "";
 
     // Display player's turn
+    const activePlayer = game.getActivePlayer();
+    
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
+    // declare Winner
     if(game.getMovecount() === game.getMaxround()) {
-      if(game.getplayerOnescore > game.getplayerTwoscore) {
+      if(game.getplayerOnescore() > game.getplayerTwoscore()) {
         playerTurnDiv.textContent = `${game.playerOneName} you win!`
       };
-       if (game.getplayerTwoscore > game.getplayerOnescore) {
+       if (game.getplayerTwoscore() > game.getplayerOnescore()) {
         playerTurnDiv.textContent = `${game.playerTwoName} you win!`
       };
     };
-    
-    playerOnescore.textContent = `Player One Score:${game.getplayerOnescore()}`;
-    playerTwoscore.textContent = `Player Two Score:${game.getplayerTwoscore()}`;
+
+    playerOnescore.textContent = `Player One Score: ${game.getplayerOnescore()}`;
+    playerTwoscore.textContent = `Player Two Score: ${game.getplayerTwoscore()}`;
 
     // Render board squares
     board.forEach((row,column) => {
@@ -232,7 +230,6 @@ function ScreenController() {
     const disableNewRound = (e) => {
       if (game.getMovecount() === game.getMaxround()) {
       newRound.removeEventListener('click', handleNewRound);
-      console.log(kakakka)
       };
     };
     
@@ -257,6 +254,7 @@ function ScreenController() {
       cell.innerHTML = "";});
       board.forEach(row => row.fill(""));
       boardDiv.addEventListener("click", clickHandlerBoard);
+      newRound.addEventListener('click', handleNewRound)
       playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
      };
      
