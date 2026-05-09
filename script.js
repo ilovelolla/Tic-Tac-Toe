@@ -83,12 +83,11 @@ function GameController(
      if(grid[0][2] === "O"  && grid[1][1] === "O" && grid[2][0] === "O" 
         ) {return "O"};
 
+        // tie     
+      if(grid.every((row) => row.every((cell) => cell !==""))){
+        return true;
+      }
     };
-
-    const checkTie = () => {
-      if(grid.every((row) => row.every((cell) => cell !=="")));
-      return;
-    }
 
   const scoreBoard = () => {
     if(players[0] && checkWinner() === "O") {
@@ -137,6 +136,9 @@ function GameController(
         alert("Already Taken")
         return
       }; 
+     if(checkWinner() === true) {
+      console.log("11212")
+     };
     checkWinner();
     scoreBoard();
     switchPlayerTurn();
@@ -147,7 +149,7 @@ function GameController(
   printNewRound();
 
   return {
-    playRound, switchPlayerTurn,getActivePlayer, checkWinner , scoreBoard, checkTie, maxRound, moveCount,
+    playRound, switchPlayerTurn,getActivePlayer, checkWinner , scoreBoard, maxRound, moveCount,
     getplayerOnescore,endGame, resetValues, getplayerTwoscore, getBoard: board.getBoard, getMaxround,
     getMovecount, playerOneName, playerTwoName};
     };
@@ -164,6 +166,7 @@ function ScreenController() {
   const playerTwoscore = document.querySelector("#playerTwoscore");
   const activePlayer = game.getActivePlayer();
   const newRound = document.querySelector('#newRound')
+  const startOver = document.querySelector("#reset")
 
  
 
@@ -223,26 +226,31 @@ function ScreenController() {
 
     //Stop Grid Execute
     const disableGrid = (e) => {
-      if (game.checkWinner() === "X" || game.checkWinner() === "O"){
+      if (game.checkWinner() === "X" || game.checkWinner() === "O" || game.checkWinner() === true){
         boardDiv.removeEventListener("click", clickHandlerBoard);
+        newRound.style.backgroundColor = "#ff79ce";
+        console.log("kkk")
       }};
 
     const disableNewRound = (e) => {
       if (game.getMovecount() === game.getMaxround()) {
       newRound.removeEventListener('click', handleNewRound);
+      newRound.style.backgroundColor = "";
+      startOver.style.backgroundColor = "#ff79ce";
       };
     };
     
   // New round game
    function handleNewRound(e){
      restartboardGame();
+     
      };
 
      newRound.addEventListener('click', handleNewRound)
 
   //Reset Game
      function resetGame(e) {
-      document.querySelector('#reset').addEventListener('click', function(){
+      startOver.addEventListener('click', function(){
      restartboardGame();
      resettingValues();
       })
@@ -256,15 +264,14 @@ function ScreenController() {
       boardDiv.addEventListener("click", clickHandlerBoard);
       newRound.addEventListener('click', handleNewRound)
       playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+      newRound.style.backgroundColor = "";
      };
      
      const resettingValues = (e) => {
       game.resetValues();
-     }
+     };
 
-    
 
-  // Initial render
   updateScreen();
   handleNewRound();
   resetGame();
